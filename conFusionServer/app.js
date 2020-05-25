@@ -12,7 +12,10 @@ var leaderRouter = require('./routes/leaderRouter');
 var app = express();
 
 const mongoose = require('mongoose');
+//Requiring Models and Schemas to interact with Mongoose
 const Dishes = require('./models/dishes');
+const Leaders = require('./models/leaders');
+const Promos = require('./models/promotions');
 const url = 'mongodb://localhost:27017/conFusion';
 const connect = mongoose.connect(url);
 connect.then(
