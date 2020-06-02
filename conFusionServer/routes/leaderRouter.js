@@ -1,104 +1,103 @@
-const express = require('express'),
-    bodyParser = require('body-parser'),
-    mongoose = require('mongoose'),
-    Leaders = require('../models/leaders'),
-    leaderRouter = express.Router();
-const authenticate = require('../autheticate');
+const express = require("express");
+const bodyParser = require("body-parser");
+const Leaders = require("../models/leaders");
+const leaderRouter = express.Router();
+var verifyUser = require("../autheticate").verifyUser;
+var verifyAdmin = require("../autheticate").verifyAdmin;
+
 leaderRouter.use(bodyParser.json());
 
 leaderRouter
-    .route('/')
-    .get(function (req, res, next) {
+    .route("/")
+    .get((req, res, next) => {
         Leaders.find({})
             .then(
-                (leaders) => {
+                leaders => {
                     res.statusCode = 200;
-                    res.setHeader('Content-Type', 'application/json');
+                    res.setHeader("Content-Type", "application/json");
                     res.json(leaders);
                 },
-                (err) => next(err)
+                err => next(err)
             )
-            .catch((err) => next(err));
+            .catch(err => next(err));
     })
-    .post(authenticate.verifyUser, function (req, res, next) {
+    .post(verifyUser, verifyAdmin, (req, res, next) => {
         Leaders.create(req.body)
             .then(
-                (leader) => {
-                    console.log('Leader Created ', leader);
+                leader => {
+                    console.log("Leader Created ", leader);
                     res.statusCode = 200;
-                    res.setHeader('Content-Type', 'application/json');
+                    res.setHeader("Content-Type", "application/json");
                     res.json(leader);
                 },
-                (err) => next(err)
+                err => next(err)
             )
-            .catch((err) => next(err));
+            .catch(err => next(err));
     })
-    .put(authenticate.verifyUser, (req, res, next) => {
+    .put(verifyUser, verifyAdmin, (req, res, next) => {
         res.statusCode = 403;
-        res.end('Put operation not supported on /leaders');
+        res.end("PUT operation not supported on /leaders");
     })
-    .delete(authenticate.verifyUser, (req, res, next) => {
+    .delete(verifyUser, verifyAdmin, (req, res, next) => {
         Leaders.remove({})
             .then(
-                (resp) => {
+                resp => {
                     res.statusCode = 200;
-                    res.setHeader('Content-Type', 'application/json');
+                    res.setHeader("Content-Type", "application/json");
                     res.json(resp);
                 },
-                (err) => next(err)
+                err => next(err)
             )
-            .catch((err) => next(err));
+            .catch(err => next(err));
     });
 
 leaderRouter
-    .route('/:leaderId')
-    .get(function (req, res, next) {
+    .route("/:leaderId")
+    .get((req, res, next) => {
         Leaders.findById(req.params.leaderId)
             .then(
-                (leader) => {
+                leader => {
                     res.statusCode = 200;
-                    res.setHeader('Content-Type', 'application/json');
+                    res.setHeader("Content-Type", "application/json");
                     res.json(leader);
                 },
-                (err) => next(err)
+                err => next(err)
             )
-            .catch((err) => next(err));
+            .catch(err => next(err));
     })
-    .post(authenticate.verifyUser, function (req, res, next) {
+    .post(verifyUser, verifyAdmin, (req, res, next) => {
         res.statusCode = 403;
-        res.end(
-            'Post operation not supported on /leaders/' + req.params.leaderId
-        );
+        res.end("POST operation not supported on /leaders/" + req.params.leaderId);
     })
-    .put(authenticate.verifyUser, function (req, res, next) {
+    .put(verifyUser, verifyAdmin, (req, res, next) => {
         Leaders.findByIdAndUpdate(
             req.params.leaderId,
             {
-                $set: req.body,
+                $set: req.body
             },
             { new: true }
         )
             .then(
-                (leader) => {
+                leader => {
                     res.statusCode = 200;
-                    res.setHeader('Content-Type', 'application/json');
+                    res.setHeader("Content-Type", "application/json");
                     res.json(leader);
                 },
-                (err) => next(err)
+                err => next(err)
             )
-            .catch((err) => next(err));
+            .catch(err => next(err));
     })
-    .delete(authenticate.verifyUser, function (req, res, next) {
+    .delete(verifyUser, verifyAdmin, (req, res, next) => {
         Leaders.findByIdAndRemove(req.params.leaderId)
             .then(
-                (resp) => {
+                resp => {
                     res.statusCode = 200;
-                    res.setHeader('Content-Type', 'application/json');
+                    res.setHeader("Content-Type", "application/json");
                     res.json(resp);
                 },
-                (err) => next(err)
+                err => next(err)
             )
-            .catch((err) => next(err));
+            .catch(err => next(err));
     });
 
 module.exports = leaderRouter;
