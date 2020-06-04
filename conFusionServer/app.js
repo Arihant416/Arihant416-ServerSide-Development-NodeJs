@@ -15,6 +15,7 @@ var dishRouter = require('./routes/dishRouter');
 var promoRouter = require('./routes/promoRouter');
 var leaderRouter = require('./routes/leaderRouter');
 var app = express();
+//Redirect to Secure Server
 
 app.all('*', (req, res, next) => {
     if (req.secure) {
